@@ -1,0 +1,77 @@
+---
+  - name: "Configure Ubuntu (SUDO)"
+    hosts: [localhost]
+    connection: local
+
+    tasks:
+
+    - name: "Upgrade Packages"
+      apt:
+        upgrade: safe
+        autoremove: true
+        purge: true
+
+    - name: "Upgrade System Packages"
+      apt:
+        upgrade: full
+        autoremove: true
+        purge: true
+
+    - name: "Upgrade Distribution"
+      apt:
+        upgrade: dist
+        autoremove: true
+        purge: true
+
+    - name: "Update APT Cache"
+      apt:
+        update_cache: yes
+        autoclean: true
+
+    - name: "Install Utilities"
+      apt:
+        name: ["clang"]
+
+    - name: "Install sdkman Dependencies"
+      apt:
+        name: ["unzip", "curl", "zip"]
+
+    - name: "Install brew Dependencies"
+      apt:
+        name: ["build-essential", "procps", "curl", "file", "git"]
+
+    - name: "Install cpython Dependencies"
+      apt:
+        name: ["gdb", "lcov", "pkg-config", "libbz2-dev", "libffi-dev", "libgdbm-dev", "libgdbm-compat-dev", "liblzma-dev", "libbz2-dev", "libffi-dev", "libgdbm-dev", "libgdbm-compat-dev", "liblzma-dev", "libncurses5-dev", "libreadline6-dev", "libsqlite3-dev", "libssl-dev", "lzma", "lzma-dev", "tk-dev", "uuid-dev", "zlib1g-dev"]
+
+    - name: "Package facts"
+      package_facts:
+        manager: "auto"
+
+    - name: "Check for Utilities"
+      debug:
+        msg: "{{item}} {{ 'installed' if item in ansible_facts.packages else 'not installed'}}"
+      loop: ["clang"]
+
+    - name: "Check for sdkman Dependencies"
+      debug:
+       msg: "{{item}} {{ 'installed' if item in ansible_facts.packages else 'not installed' }}"
+      loop: ["unzip", "curl", "zip"]
+
+    - name: "Check for brew Dependencies" 
+      debug:
+        msg: "{{ item }} {{ 'installed' if item in ansible_facts.packages else 'not installed' }}"
+      loop: ["build-essential","procps","curl","file","git"]
+
+    - name: "Check for cpython Dependencies"
+      debug:
+        msg: "{{ item }} {{ 'installed' if item in ansible_facts.packages else 'not installed' }}"
+      loop: ["gdb", "lcov", "pkg-config", "libbz2-dev", "libffi-dev", "libgdbm-dev", "libgdbm-compat-dev", "liblzma-dev", "libncurses5-dev", "libreadline6-dev", "libsqlite3-dev", "libssl-dev", "lzma", "lzma-dev", "tk-dev", "uv", "uuid-dev", "zlib1g-dev"]
+
+    - name: "Check fail assert"
+      assert:
+        that: "ansible_os_family == 'Debian'"  
+
+    - name: "Assert Download"
+      assert:
+        that: "'gdb' in ansible_facts.packages"
